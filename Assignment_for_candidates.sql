@@ -41,8 +41,10 @@ begin
 		and try_cast(cs.DateEnd as date) is not null
 		and try_cast(isnull(cs.FlagActive, 0) as bit) is not null
 
-	-- Определяем некорректные записи
-	-- Добавляем причину, по которой запись считается некорректной
+	/*
+		Определяем некорректные записи.
+		Добавляем причину, по которой запись считается некорректной
+	*/
 	select
 		cs.*
 		,case
@@ -100,7 +102,7 @@ begin
 		select @ErrorMessage = concat('Обработано строк: ', @RowCount)
 		raiserror(@ErrorMessage, 1, 1)
 
-		--Формирование таблицы для отчетности
+		-- Формирование таблицы для отчетности
 		select top 100
 			bir.Season as 'Сезон'
 			,bir.UID_DS_Customer as 'UID Клиента'
