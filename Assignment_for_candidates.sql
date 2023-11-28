@@ -11,14 +11,14 @@ begin
 	select 1
 	from syn.ImportFile as f
 	where f.ID = @ID_Record
-		and f.FlagLoaded = cast(1 as bit)
+	and f.FlagLoaded = cast(1 as bit)
 	)
-		begin
-			set @ErrorMessage = 'Ошибка при загрузке файла, проверьте корректность данных'
-			raiserror(@ErrorMessage, 3, 1)
+	begin
+		set @ErrorMessage = 'Ошибка при загрузке файла, проверьте корректность данных'
+		raiserror(@ErrorMessage, 3, 1)
 	
-			return
-		end
+		return
+	end
 
 	-- Чтение из слоя временных данных
 	select
@@ -56,11 +56,11 @@ begin
 		end as Reason
 	into #BadInsertedRows
 	from syn.SA_CustomerSeasonal as cs
-	left join dbo.Customer as c on c.UID_DS = cs.UID_DS_Customer
-		and c.ID_mapping_DataSource = 1
-	left join dbo.Customer as c_dist on c_dist.UID_DS = cs.UID_DS_CustomerDistributor and c_dist.ID_mapping_DataSource = 1
-	left join dbo.Season as s on s.Name = cs.Season
-	left join syn.CustomerSystemType as cst on cst.Name = cs.CustomerSystemType
+		left join dbo.Customer as c on c.UID_DS = cs.UID_DS_Customer
+			and c.ID_mapping_DataSource = 1
+		left join dbo.Customer as c_dist on c_dist.UID_DS = cs.UID_DS_CustomerDistributor and c_dist.ID_mapping_DataSource = 1
+		left join dbo.Season as s on s.Name = cs.Season
+		left join syn.CustomerSystemType as cst on cst.Name = cs.CustomerSystemType
 	where c.ID is null
 		or c_dist.ID is null
 		or s.ID is null
