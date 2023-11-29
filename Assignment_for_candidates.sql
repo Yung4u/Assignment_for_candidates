@@ -106,7 +106,14 @@ begin
 		from syn.CustomerSeasonal as cs
 	when not matched then
 		insert (ID_dbo_Customer, ID_CustomerSystemType, ID_Season, DateBegin, DateEnd, ID_dbo_CustomerDistributor, FlagActive)
-		values (s.ID_dbo_Customer, s.ID_CustomerSystemType, s.ID_Season, s.DateBegin, s.DateEnd, s.ID_dbo_CustomerDistributor, s.FlagActive);
+		values
+			s.ID_dbo_Customer,
+			s.ID_CustomerSystemType,
+			s.ID_Season,
+			s.DateBegin,
+			s.DateEnd,
+			s.ID_dbo_CustomerDistributor,
+			s.FlagActive;
 
 	-- Информационное сообщение
 	begin
