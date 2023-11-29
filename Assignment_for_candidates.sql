@@ -23,13 +23,13 @@ begin
 
 	-- Чтение из слоя временных данных
 	select
-		c.ID as ID_dbo_Customer
-		,cst.ID as ID_CustomerSystemType
-		,s.ID as ID_Season
-		,cast(cs.DateBegin as date) as DateBegin
-		,cast(cs.DateEnd as date) as DateEnd
-		,c_dist.ID as ID_dbo_CustomerDistributor
-		,cast(isnull(cs.FlagActive, 0) as bit) as FlagActive
+		c.ID as ID_dbo_Customer,
+		cst.ID as ID_CustomerSystemType,
+		s.ID as ID_Season,
+		cast(cs.DateBegin as date) as DateBegin,
+		cast(cs.DateEnd as date) as DateEnd,
+		c_dist.ID as ID_dbo_CustomerDistributor,
+		cast(isnull(cs.FlagActive, 0) as bit) as FlagActive
 	into #CustomerSeasonal
 	from syn.SA_CustomerSeasonal as cs
 		join dbo.Customer as c on c.UID_DS = cs.UID_DS_Customer
@@ -47,8 +47,8 @@ begin
 		Добавляем причину, по которой запись считается некорректной
 	*/
 	select
-		cs.*
-		,case
+		cs.*,
+		case
 			when c.ID is null then 'UID клиента отсутствует в справочнике "Клиент"'
 			when c_dist.ID is null then 'UID дистрибьютора отсутствует в справочнике "Клиент"'
 			when s.ID is null then 'Сезон отсутствует в справочнике "Сезон"'
@@ -76,13 +76,13 @@ begin
 	merge into syn.CustomerSeasonal as cs
 	using (
 		select
-			cs_temp.ID_dbo_Customer
-			,cs_temp.ID_CustomerSystemType
-			,cs_temp.ID_Season
-			,cs_temp.DateBegin
-			,cs_temp.DateEnd
-			,cs_temp.ID_dbo_CustomerDistributor
-			,cs_temp.FlagActive
+			cs_temp.ID_dbo_Customer,
+			cs_temp.ID_CustomerSystemType,
+			cs_temp.ID_Season,
+			cs_temp.DateBegin,
+			cs_temp.DateEnd,
+			cs_temp.ID_dbo_CustomerDistributor,
+			cs_temp.FlagActive
 		from #CustomerSeasonal as cs_temp
 	) as s on s.ID_dbo_Customer = cs.ID_dbo_Customer
 		and s.ID_Season = cs.ID_Season
@@ -90,10 +90,10 @@ begin
 	when matched
 		and t.ID_CustomerSystemType <> s.ID_CustomerSystemType then
 		update
-		set ID_CustomerSystemType = s.ID_CustomerSystemType
-			,DateEnd = s.DateEnd
-			,ID_dbo_CustomerDistributor = s.ID_dbo_CustomerDistributor
-			,FlagActive = s.FlagActive
+		set ID_CustomerSystemType = s.ID_CustomerSystemType,
+			DateEnd = s.DateEnd,
+			ID_dbo_CustomerDistributor = s.ID_dbo_CustomerDistributor,
+			FlagActive = s.FlagActive
 	when not matched then
 		insert (ID_dbo_Customer, ID_CustomerSystemType, ID_Season, DateBegin, DateEnd, ID_dbo_CustomerDistributor, FlagActive)
 		values (s.ID_dbo_Customer, s.ID_CustomerSystemType, s.ID_Season, s.DateBegin, s.DateEnd, s.ID_dbo_CustomerDistributor, s.FlagActive);
@@ -105,16 +105,16 @@ begin
 
 		-- Формирование таблицы для отчетности
 		select top 100
-			bir.Season as 'Сезон'
-			,bir.UID_DS_Customer as 'UID Клиента'
-			,bir.Customer as 'Клиент'
-			,bir.CustomerSystemType as 'Тип клиента'
-			,bir.UID_DS_CustomerDistributor as 'UID Дистрибьютора'
-			,bir.CustomerDistributor as 'Дистрибьютор'
-			,isnull(format(try_cast(bir.DateBegin as date), 'dd.MM.yyyy', 'ru-RU'), bir.DateBegin) as 'Дата начала'
-			,isnull(format(try_cast(birDateEnd as date), 'dd.MM.yyyy', 'ru-RU'), bir.DateEnd) as 'Дата окончания'
-			,bir.FlagActive as 'Активность'
-			,bir.Reason as 'Причина'
+			bir.Season as 'Сезон',
+			bir.UID_DS_Customer as 'UID Клиента',
+			bir.Customer as 'Клиент',
+			bir.CustomerSystemType as 'Тип клиента',
+			bir.UID_DS_CustomerDistributor as 'UID Дистрибьютора',
+			bir.CustomerDistributor as 'Дистрибьютор',
+			isnull(format(try_cast(bir.DateBegin as date), 'dd.MM.yyyy', 'ru-RU'), bir.DateBegin) as 'Дата начала',
+			isnull(format(try_cast(birDateEnd as date), 'dd.MM.yyyy', 'ru-RU'), bir.DateEnd) as 'Дата окончания',
+			bir.FlagActive as 'Активность',
+			bir.Reason as 'Причина'
 		from #BadInsertedRows as bir
 
 		return
