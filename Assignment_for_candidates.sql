@@ -12,7 +12,7 @@ begin
 		select 1
 		from syn.ImportFile as f
 		where f.ID = @ID_Record
-		and f.FlagLoaded = cast(1 as bit)
+			and f.FlagLoaded = cast(1 as bit)
 	)
 	begin
 		set @ErrorMessage = 'Ошибка при загрузке файла, проверьте корректность данных'
@@ -37,7 +37,7 @@ begin
 		inner join dbo.Season as s on s.Name = cs.Season
 		inner join dbo.Customer as c_dist on c_dist.UID_DS = cs.UID_DS_CustomerDistributor
 			and c_dist.ID_mapping_DataSource = 1
-		inner join syn.CustomerSystemType as cst on cs.CustomerSystemType = cst.Name
+		inner join syn.CustomerSystemType as cst on cst.Name = cs.CustomerSystemType
 	where try_cast(cs.DateBegin as date) is not null
 		and try_cast(cs.DateEnd as date) is not null
 		and try_cast(isnull(cs.FlagActive, 0) as bit) is not null
@@ -95,17 +95,24 @@ begin
 	) as s on s.ID_dbo_Customer = cs.ID_dbo_Customer
 		and s.ID_Season = cs.ID_Season
 		and s.DateBegin = cs.DateBegin
-	when matched
-		and t.ID_CustomerSystemType <> s.ID_CustomerSystemType
-		then
+	when matched and t.ID_CustomerSystemType <> s.ID_CustomerSystemType then
 		update cs
-		set ID_CustomerSystemType = s.ID_CustomerSystemType,
+		set
+			ID_CustomerSystemType = s.ID_CustomerSystemType,
 			DateEnd = s.DateEnd,
 			ID_dbo_CustomerDistributor = s.ID_dbo_CustomerDistributor,
 			FlagActive = s.FlagActive
 		from syn.CustomerSeasonal as cs
 	when not matched then
-		insert (ID_dbo_Customer, ID_CustomerSystemType, ID_Season, DateBegin, DateEnd, ID_dbo_CustomerDistributor, FlagActive)
+		insert (
+			ID_dbo_Customer,
+			ID_CustomerSystemType,
+			ID_Season,
+			DateBegin,
+			DateEnd,
+			ID_dbo_CustomerDistributor,
+			FlagActive
+		)
 		values
 			s.ID_dbo_Customer,
 			s.ID_CustomerSystemType,
@@ -128,8 +135,10 @@ begin
 			bir.CustomerSystemType as 'Тип клиента',
 			bir.UID_DS_CustomerDistributor as 'UID Дистрибьютора',
 			bir.CustomerDistributor as 'Дистрибьютор',
-			isnull(format(try_cast(bir.DateBegin as date), 'dd.MM.yyyy', 'ru-RU'), bir.DateBegin) as 'Дата начала',
-			isnull(format(try_cast(birDateEnd as date), 'dd.MM.yyyy', 'ru-RU'), bir.DateEnd) as 'Дата окончания',
+			isnull(format(try_cast(bir.DateBegin as date), 'dd.MM.yyyy', 'ru-RU'),
+				bir.DateBegin) as 'Дата начала',
+			isnull(format(try_cast(birDateEnd as date), 'dd.MM.yyyy', 'ru-RU'),
+				bir.DateEnd) as 'Дата окончания',
 			bir.FlagActive as 'Активность',
 			bir.Reason as 'Причина'
 		from #BadInsertedRows as bir
