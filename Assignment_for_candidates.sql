@@ -106,7 +106,15 @@ begin
 			FlagActive = s.FlagActive
 		from syn.CustomerSeasonal as cs
 	when not matched then
-		insert (ID_dbo_Customer, ID_CustomerSystemType, ID_Season, DateBegin, DateEnd, ID_dbo_CustomerDistributor, FlagActive)
+		insert (
+			ID_dbo_Customer,
+			ID_CustomerSystemType,
+			ID_Season,
+			DateBegin,
+			DateEnd,
+			ID_dbo_CustomerDistributor,
+			FlagActive
+		)
 		values
 			s.ID_dbo_Customer,
 			s.ID_CustomerSystemType,
@@ -129,8 +137,10 @@ begin
 			bir.CustomerSystemType as 'Тип клиента',
 			bir.UID_DS_CustomerDistributor as 'UID Дистрибьютора',
 			bir.CustomerDistributor as 'Дистрибьютор',
-			isnull(format(try_cast(bir.DateBegin as date), 'dd.MM.yyyy', 'ru-RU'), bir.DateBegin) as 'Дата начала',
-			isnull(format(try_cast(birDateEnd as date), 'dd.MM.yyyy', 'ru-RU'), bir.DateEnd) as 'Дата окончания',
+			isnull(format(try_cast(bir.DateBegin as date), 'dd.MM.yyyy', 'ru-RU'),
+				bir.DateBegin) as 'Дата начала',
+			isnull(format(try_cast(birDateEnd as date), 'dd.MM.yyyy', 'ru-RU'),
+				bir.DateEnd) as 'Дата окончания',
 			bir.FlagActive as 'Активность',
 			bir.Reason as 'Причина'
 		from #BadInsertedRows as bir
