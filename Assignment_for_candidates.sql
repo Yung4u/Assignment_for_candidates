@@ -95,9 +95,7 @@ begin
 	) as s on s.ID_dbo_Customer = cs.ID_dbo_Customer
 		and s.ID_Season = cs.ID_Season
 		and s.DateBegin = cs.DateBegin
-	when matched
-		and t.ID_CustomerSystemType <> s.ID_CustomerSystemType
-		then
+	when matched and t.ID_CustomerSystemType <> s.ID_CustomerSystemType then
 		update cs
 		set
 			ID_CustomerSystemType = s.ID_CustomerSystemType,
