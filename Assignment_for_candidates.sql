@@ -99,7 +99,8 @@ begin
 		and t.ID_CustomerSystemType <> s.ID_CustomerSystemType
 		then
 		update cs
-		set ID_CustomerSystemType = s.ID_CustomerSystemType,
+		set
+			ID_CustomerSystemType = s.ID_CustomerSystemType,
 			DateEnd = s.DateEnd,
 			ID_dbo_CustomerDistributor = s.ID_dbo_CustomerDistributor,
 			FlagActive = s.FlagActive
